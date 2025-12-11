@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Selecionar Regional GGNET - SZ.CHAT
 // @namespace    http://tampermonkey.net/
-// @version      2.1
+// @version      2.2
 // @description  Seletor de regional
 // @author       João/Samuel
 // @icon         https://avatars.githubusercontent.com/u/179055349?v=4
@@ -20,7 +20,7 @@
 
     // --- CONFIGURAÇÃO ---
     const regionais = [
-        { nome: 'Regional CDR', bg: '#ffcccc', text: '#550000' },
+        { nome: 'Regional CD', bg: '#ffcccc', text: '#550000' },
         { nome: 'Regional VII', bg: '#ffdec2', text: '#5c2b00' },
         { nome: 'Regional CNI', bg: '#fff4bd', text: '#5c5200' },
         { nome: 'Regional UVA', bg: '#d4edda', text: '#155724' },
