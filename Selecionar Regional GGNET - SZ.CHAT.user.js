@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Selecionar Regional GGNET - SZ.CHAT
+// @name         Selecionar Regional GGNET - SZ.CHAT - JoaoAGS/Samuel
 // @namespace    http://tampermonkey.net/
 // @version      2.3
 // @description  Seletor de regional
@@ -11,9 +11,8 @@
 // @run-at       document-idle
 // ==/UserScript==
 // --- ESTRATÉGIA DE ATUALIZAÇÃO ---
-// @updateURL    https://github.com/joaoAGS/Selecionar-Regional-GGNET---SZ.CHAT/raw/refs/heads/main/Selecionar%20Regional%20GGNET%20-%20SZ.CHAT.user.js
-// @downloadURL  https://github.com/joaoAGS/Selecionar-Regional-GGNET---SZ.CHAT/raw/refs/heads/main/Selecionar%20Regional%20GGNET%20-%20SZ.CHAT.user.js
-// ==/UserScript==
+// @updateURL    https://raw.githubusercontent.com/joaoAGS/Selecionar-Regional-GGNET---SZ.CHAT/main/Selecionar%20Regional%20GGNET%20-%20SZ.CHAT.user.js
+// @downloadURL  https://raw.githubusercontent.com/joaoAGS/Selecionar-Regional-GGNET---SZ.CHAT/main/Selecionar%20Regional%20GGNET%20-%20SZ.CHAT.user.js
 
 (function () {
     'use strict';
