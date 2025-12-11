@@ -11,7 +11,7 @@
 // @run-at       document-idle
 // ==/UserScript==
 // --- CONFIGURAÇÃO DE ATUALIZAÇÃO AUTOMÁTICA ---
-// @updateURL    https://cdn.jsdelivr.net/gh/joaoAGS/Selecionar-Regional-GGNET---SZ.CHAT@main/Selecionar%20Regional%20GGNET%20-%20SZ.CHAT.user.js
+// @updateURL    https://github.com/joaoAGS/Selecionar-Regional-GGNET---SZ.CHAT/raw/refs/heads/main/Selecionar%20Regional%20GGNET%20-%20SZ.CHAT.user.js
 // @downloadURL  https://cdn.jsdelivr.net/gh/joaoAGS/Selecionar-Regional-GGNET---SZ.CHAT@main/Selecionar%20Regional%20GGNET%20-%20SZ.CHAT.user.js
 // ==/UserScript==
 
