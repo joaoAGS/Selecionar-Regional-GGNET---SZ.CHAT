@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Selecionar Regional GGNET - SZ.CHAT
 // @namespace    http://tampermonkey.net/
-// @version      2.2
+// @version      2.3
 // @description  Seletor de regional
 // @author       João/Samuel
 // @icon         https://avatars.githubusercontent.com/u/179055349?v=4
