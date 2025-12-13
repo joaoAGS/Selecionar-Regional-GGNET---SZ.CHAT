@@ -5,7 +5,7 @@
   <br><br>
   
   <a href="https://raw.githubusercontent.com/joaoAGS/Selecionar-Regional-GGNET---SZ.CHAT/main/Selecionar%20Regional%20GGNET%20-%20SZ.CHAT.user.js">
-    <img src="https://img.shields.io/badge/⬇️_Instalar_Script-v2.4-success?style=for-the-badge&logo=tampermonkey" alt="Instalar Script">
+    <img src="https://img.shields.io/badge/⬇️_Instalar_Script-v2.5-success?style=for-the-badge&logo=tampermonkey" alt="Instalar Script">
   </a>
   
   <br>
