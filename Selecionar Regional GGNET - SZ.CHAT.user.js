@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Selecionar Regional GGNET - SZ.CHAT - JoaoAGS/Samuel
 // @namespace    http://tampermonkey.net/
-// @version      2.4
+// @version      2.5
 // @description  Seletor de regional
 // @author       João/Samuel
 // @icon         https://avatars.githubusercontent.com/u/179055349?v=4
@@ -13,6 +13,7 @@
 // --- ESTRATÉGIA DE ATUALIZAÇÃO ---
 // @updateURL    https://raw.githubusercontent.com/joaoAGS/Selecionar-Regional-GGNET---SZ.CHAT/main/Selecionar%20Regional%20GGNET%20-%20SZ.CHAT.user.js
 // @downloadURL  https://raw.githubusercontent.com/joaoAGS/Selecionar-Regional-GGNET---SZ.CHAT/main/Selecionar%20Regional%20GGNET%20-%20SZ.CHAT.user.js
+// ==/UserScript==
 
 (function () {
     'use strict';
@@ -32,7 +33,6 @@
     // --- ESTILOS CSS ---
     const style = document.createElement('style');
     style.innerHTML = `
-        /* O Container agora é Fixed para flutuar sobre tudo */
         #regional-dropdown-portal {
             display: none;
             position: fixed;
@@ -41,7 +41,7 @@
             border-radius: 8px;
             padding: 10px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            z-index: 10000; /* Z-index altíssimo para ficar por cima do chat */
+            z-index: 10000;
             width: 220px;
             max-height: 400px;
             overflow-y: auto;
@@ -50,12 +50,10 @@
             transform: translateY(-10px);
             transition: opacity 0.2s, transform 0.2s;
         }
-
         #regional-dropdown-portal.ativo {
             opacity: 1;
             transform: translateY(0);
         }
-
         .regional-item {
             display: block;
             padding: 8px 12px;
@@ -68,47 +66,32 @@
             transition: filter 0.2s;
             user-select: none;
         }
-
-        .regional-item:hover {
-            filter: brightness(0.95);
-        }
-
+        .regional-item:hover { filter: brightness(0.95); }
         .regional-search {
             width: 100%;
             padding: 8px;
             margin-bottom: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            box-sizing: border-box; /* Garante que o padding não estoure a largura */
+            box-sizing: border-box;
         }
-
-        /* Scrollbar bonitinha */
-        #regional-dropdown-portal::-webkit-scrollbar {
-            width: 6px;
-        }
-        #regional-dropdown-portal::-webkit-scrollbar-thumb {
-            background-color: #ccc;
-            border-radius: 4px;
-        }
+        #regional-dropdown-portal::-webkit-scrollbar { width: 6px; }
+        #regional-dropdown-portal::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 4px; }
     `;
     document.head.appendChild(style);
 
-    // --- CRIAÇÃO DO MENU FLUTUANTE (PORTAL) ---
-    // Criamos direto no body para não ser cortado pela barra lateral
+    // --- CRIAÇÃO DO MENU FLUTUANTE ---
     const dropdown = document.createElement('div');
     dropdown.id = 'regional-dropdown-portal';
-
-    // Input de busca
+    
     const inputSearch = document.createElement('input');
     inputSearch.type = 'text';
     inputSearch.placeholder = 'Buscar regional...';
     inputSearch.className = 'regional-search';
     dropdown.appendChild(inputSearch);
 
-    // Container da lista
     const listaContainer = document.createElement('div');
     dropdown.appendChild(listaContainer);
-
     document.body.appendChild(dropdown);
 
     // --- FUNÇÕES AUXILIARES ---
@@ -121,14 +104,11 @@
                 item.textContent = reg.nome;
                 item.style.backgroundColor = reg.bg;
                 item.style.color = reg.text;
-
+                
                 item.onclick = () => {
                     localStorage.setItem('sz_regional_selecionada', reg.nome);
-
-                    // Atualiza o texto do botão (se ele existir na tela)
                     const labelBtn = document.getElementById('reg-label');
                     if(labelBtn) labelBtn.textContent = reg.nome;
-
                     fecharDropdown();
                 };
                 listaContainer.appendChild(item);
@@ -139,10 +119,8 @@
     function fecharDropdown() {
         dropdown.classList.remove('ativo');
         setTimeout(() => {
-            if (!dropdown.classList.contains('ativo')) {
-                dropdown.style.display = 'none';
-            }
-        }, 200); // Espera a animação acabar
+            if (!dropdown.classList.contains('ativo')) dropdown.style.display = 'none';
+        }, 200);
     }
 
     function toggleDropdown(btnElement) {
@@ -150,71 +128,69 @@
             fecharDropdown();
             return;
         }
-
-        // Resetar filtro ao abrir
         inputSearch.value = '';
         renderizarLista();
-
-        // CÁLCULO DE POSIÇÃO (A Mágica da Responsividade)
+        
         const rect = btnElement.getBoundingClientRect();
-
-        // Posiciona logo abaixo do botão, alinhado à esquerda
         let top = rect.bottom + 5;
         let left = rect.left;
-
-        // Se estiver muito embaixo da tela, abre para cima
-        if (top + 400 > window.innerHeight) {
-            top = rect.top - 410; // Altura estimada do menu
-        }
+        if (top + 400 > window.innerHeight) top = rect.top - 410;
 
         dropdown.style.top = `${top}px`;
         dropdown.style.left = `${left}px`;
         dropdown.style.display = 'block';
-
-        // Pequeno delay para permitir a animação CSS
+        
         requestAnimationFrame(() => {
             dropdown.classList.add('ativo');
             inputSearch.focus();
         });
     }
 
-    // Evento de busca
     inputSearch.addEventListener('input', (e) => renderizarLista(e.target.value));
-
-    // Fechar ao clicar fora
     document.addEventListener('click', (e) => {
-        // Se o clique não foi no dropdown nem no botão que abre ele
         if (!dropdown.contains(e.target) && !e.target.closest('#btn-selecionar-regional')) {
             fecharDropdown();
         }
     });
 
-    // --- OBSERVER (INSERE O BOTÃO NA TELA) ---
+    // --- OBSERVER ---
     const observer = new MutationObserver(() => {
+        // Seleciona TODOS os botões da barra lateral
         const botoes = Array.from(document.querySelectorAll('a.item.text-ellipsis'));
         const btnExistente = document.querySelector('#btn-selecionar-regional');
 
-        // Usa o botão de "Baixar Mídia" como âncora
-        const btnModelo = botoes.find(el => el.textContent.includes('Baixar Mídia'));
+        if (botoes.length === 0 || btnExistente) return;
 
-        if (!btnModelo || btnExistente) return;
+        // ESTRATÉGIA DE FALLBACK (CORREÇÃO DE COMPATIBILIDADE)
+        // 1. Tenta achar o botão "Baixar Mídia"
+        let btnModelo = botoes.find(el => el.textContent.includes('Baixar Mídia'));
+        
+        // 2. Se não achar, tenta "Protocolo"
+        if (!btnModelo) btnModelo = botoes.find(el => el.textContent.includes('Protocolo'));
+        
+        // 3. Se não achar, tenta "Gerar" (para scripts de terceiros)
+        if (!btnModelo) btnModelo = botoes.find(el => el.textContent.includes('Gerar'));
 
-        // Clona e cria o botão
+        // 4. Se não achar NADA específico, pega o primeiro botão disponível da lista
+        if (!btnModelo) btnModelo = botoes[0];
+
+        // Se mesmo assim não achou nada (sidebar vazia?), aborta
+        if (!btnModelo) return;
+
         const novoBotao = btnModelo.cloneNode(true);
         novoBotao.id = 'btn-selecionar-regional';
         novoBotao.href = 'javascript:void(0)';
-
+        
         const salvo = localStorage.getItem('sz_regional_selecionada') || 'Selecionar Regional';
         novoBotao.innerHTML = `<i class="icon map marker alternate"></i> <span id="reg-label">${salvo}</span>`;
 
-        // Evento de clique do botão
         novoBotao.addEventListener('click', (e) => {
             e.stopPropagation();
             e.preventDefault();
             toggleDropdown(novoBotao);
         });
 
-        // Insere na barra lateral
+        // Insere o botão ANTES do botão modelo encontrado
         btnModelo.parentElement.insertBefore(novoBotao, btnModelo);
     });
 
