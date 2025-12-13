@@ -1,18 +1,14 @@
 // ==UserScript==
-// @name         Selecionar Regional GGNET - SZ.CHAT - JoaoAGS/Samuel
+// @name         Selecionar Regional GGNET - SZ.CHAT - JoaoAGS/Samuel (FIX PROTOCOLO)
 // @namespace    http://tampermonkey.net/
-// @version      2.5
-// @description  Seletor de regional
+// @version      2.6
+// @description  Seletor de regional posicionado pelo Protocolo
 // @author       João/Samuel
 // @icon         https://avatars.githubusercontent.com/u/179055349?v=4
 // @match        *://*.ggnet.sz.chat/*
 // @match        *://clusterscpr.sz.chat/*
 // @grant        none
 // @run-at       document-idle
-// ==/UserScript==
-// --- ESTRATÉGIA DE ATUALIZAÇÃO ---
-// @updateURL    https://raw.githubusercontent.com/joaoAGS/Selecionar-Regional-GGNET---SZ.CHAT/main/Selecionar%20Regional%20GGNET%20-%20SZ.CHAT.user.js
-// @downloadURL  https://raw.githubusercontent.com/joaoAGS/Selecionar-Regional-GGNET---SZ.CHAT/main/Selecionar%20Regional%20GGNET%20-%20SZ.CHAT.user.js
 // ==/UserScript==
 
 (function () {
@@ -74,6 +70,19 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             box-sizing: border-box;
+        }
+        /* Estilo para garantir que o botão pareça nativo */
+        .btn-regional-custom {
+            display: block;
+            padding: 10px 15px;
+            color: rgba(0,0,0,.87);
+            cursor: pointer;
+            font-weight: 400;
+            border-top: 1px solid #f0f0f0;
+        }
+        .btn-regional-custom:hover {
+            background-color: #f9fafb;
+            color: #1e70bf;
         }
         #regional-dropdown-portal::-webkit-scrollbar { width: 6px; }
         #regional-dropdown-portal::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 4px; }
@@ -153,45 +162,51 @@
         }
     });
 
+    // --- FUNÇÃO PARA ENCONTRAR O PROTOCOLO POR TEXTO ---
+    function encontrarElementoProtocolo() {
+        // XPath procura qualquer elemento que contenha o texto "Protocolo:"
+        const xpath = "//*[contains(text(), 'Protocolo:')]";
+        const result = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+        return result.singleNodeValue;
+    }
+
     // --- OBSERVER ---
     const observer = new MutationObserver(() => {
-        // Seleciona TODOS os botões da barra lateral
-        const botoes = Array.from(document.querySelectorAll('a.item.text-ellipsis'));
         const btnExistente = document.querySelector('#btn-selecionar-regional');
+        if (btnExistente) return;
 
-        if (botoes.length === 0 || btnExistente) return;
+        // 1. Procura o elemento de texto "Protocolo:"
+        const elementoTextoProtocolo = encontrarElementoProtocolo();
 
-        // ESTRATÉGIA DE FALLBACK (CORREÇÃO DE COMPATIBILIDADE)
-        // 1. Tenta achar o botão "Baixar Mídia"
-        let btnModelo = botoes.find(el => el.textContent.includes('Baixar Mídia'));
-        
-        // 2. Se não achar, tenta "Protocolo"
-        if (!btnModelo) btnModelo = botoes.find(el => el.textContent.includes('Protocolo'));
-        
-        // 3. Se não achar, tenta "Gerar" (para scripts de terceiros)
-        if (!btnModelo) btnModelo = botoes.find(el => el.textContent.includes('Gerar'));
+        if (elementoTextoProtocolo) {
+            // 2. Encontra o container "pai" desse texto (geralmente uma div com classe 'item' ou 'label')
+            // O closest('.item') garante que pegamos a linha inteira da sidebar
+            const containerProtocolo = elementoTextoProtocolo.closest('.item') || elementoTextoProtocolo.parentElement;
 
-        // 4. Se não achar NADA específico, pega o primeiro botão disponível da lista
-        if (!btnModelo) btnModelo = botoes[0];
+            if (containerProtocolo) {
+                // 3. Cria o novo botão
+                const novoBotao = document.createElement('a');
+                novoBotao.id = 'btn-selecionar-regional';
+                novoBotao.className = 'item text-ellipsis'; // Classes nativas do SZ para alinhar igual
+                novoBotao.href = 'javascript:void(0)';
+                
+                // Estilo inline para garantir destaque caso as classes não peguem
+                novoBotao.style.marginTop = '5px';
+                novoBotao.style.borderTop = '1px solid #eee'; 
 
-        // Se mesmo assim não achou nada (sidebar vazia?), aborta
-        if (!btnModelo) return;
+                const salvo = localStorage.getItem('sz_regional_selecionada') || 'Selecionar Regional';
+                novoBotao.innerHTML = `<i class="icon map marker alternate"></i> <span id="reg-label">${salvo}</span>`;
 
-        const novoBotao = btnModelo.cloneNode(true);
-        novoBotao.id = 'btn-selecionar-regional';
-        novoBotao.href = 'javascript:void(0)';
-        
-        const salvo = localStorage.getItem('sz_regional_selecionada') || 'Selecionar Regional';
-        novoBotao.innerHTML = `<i class="icon map marker alternate"></i> <span id="reg-label">${salvo}</span>`;
+                novoBotao.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    toggleDropdown(novoBotao);
+                });
 
-        novoBotao.addEventListener('click', (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            toggleDropdown(novoBotao);
-        });
-
-        // Insere o botão ANTES do botão modelo encontrado
-        btnModelo.parentElement.insertBefore(novoBotao, btnModelo);
+                // 4. Insere LOGO APÓS o container do protocolo
+                containerProtocolo.parentNode.insertBefore(novoBotao, containerProtocolo.nextSibling);
+            }
+        }
     });
 
     observer.observe(document.body, { childList: true, subtree: true });
